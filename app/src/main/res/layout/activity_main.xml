@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.chaira.androidtest.MainActivity">
+
+    <Button
+        android:text="Inicia sesión"
+        android:background="#1abc9c"
+        android:textColor="#fcfcfc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/loginBtn"
+        android:onClick="login"
+        android:layout_below="@+id/tc"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="27dp" />
+
+    <Button
+        android:text="Cerrar sesión"
+        android:background="#e74c3c"
+        android:textColor="#fcfcfc"
+        android:layout_height="wrap_content"
+        android:id="@+id/logoutBtn"
+        android:onClick="logout"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_height="400px"
+        android:id="@+id/imageView"
+        android:visibility="visible"
+        android:layout_width="400px"
+        app:srcCompat="@android:drawable/ic_menu_report_image"
+        android:layout_above="@+id/showScope"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitStart"
+        android:adjustViewBounds="false"
+        android:cropToPadding="false"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="70dp" />
+
+    <TextView
+        android:layout_width="500px"
+        android:layout_height="600px"
+        android:id="@+id/showScope"
+        android:layout_above="@+id/logoutBtn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Inicia sesión con tus credenciales Chairá para obtener tu información básica"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:id="@+id/tc"
+        android:layout_marginTop="108dp"
+        android:layout_below="@+id/imageView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Mostrar datos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/showData"
+        android:onClick="parseData"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:elevation="1dp"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true" />
+
+
+</RelativeLayout>

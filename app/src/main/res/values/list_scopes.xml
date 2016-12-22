@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="scopes">
+        <item>public_profile</item>
+        <item>private_profile</item>
+        <item>student_academic_information</item>
+        <item>schedule</item>
+        <item>schedule_professor</item>
+    </string-array>
+</resources>
