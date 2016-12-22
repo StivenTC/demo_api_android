@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.StrictMode;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         appData = getSharedPreferences("data", MODE_PRIVATE);
         String code = "";
         Intent intent = getIntent();
+        //Obtenemos los datos del login por medio de los parámetros de la url
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             Uri uri = intent.getData();
             code = uri.getQueryParameter("code");
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    //Abrimos el navegador y redirigimos al usuario al logín oficial de Chairá
     public void login(View view) {
         Toast.makeText(getApplicationContext(), "Abriendo navegador", Toast.LENGTH_LONG).show();
         String urlLogin = "http://chaira.udla.edu.co/api/v0.1/oauth2/authorize.asmx/auth?response_type=code&client_id=17358389435&redirect_uri=http://myapp&state=xyz";
@@ -72,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(browserIntent);
 
     }
+
+    //Cerrar sesión
     public void logout(View v){
         String url = "http://chaira.udla.edu.co/api/v0.1/oauth2/resource.asmx/logout";
         JSONObject js= new JSONObject();
@@ -80,7 +85,15 @@ public class MainActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        //enviamos la petición
         sendRequest(js, url);
+
+        Toast.makeText(getApplicationContext(), "El usuario ha cerrado sesión", Toast.LENGTH_LONG).show();
+
+        //Limpiamos los datos guardados
+        SharedPreferences.Editor editor = appData.edit();
+        editor.clear();
+        editor.commit();
 
         Button login =  (Button) findViewById(R.id.loginBtn);
         login.setVisibility(View.VISIBLE);
@@ -90,13 +103,18 @@ public class MainActivity extends AppCompatActivity {
 
         Button logout=  (Button) findViewById(R.id.logoutBtn);
         logout.setVisibility(View.GONE);
-        Toast.makeText(getApplicationContext(), "El usuario ha cerrado sesión", Toast.LENGTH_LONG).show();
 
-        SharedPreferences.Editor editor = appData.edit();
-        editor.clear();
-        editor.commit();
+        ImageView foto = (ImageView) findViewById(R.id.avatar);
+        foto.setVisibility(View.GONE);
+
+        TextView showText =  (TextView) findViewById(R.id.showScope);
+        showText.setText("");
+
+        Button show=  (Button) findViewById(R.id.showData);
+        show.setVisibility(View.GONE);
     }
 
+    //Solicitud access_token
     public void requestAccessToken(String code) {
         String url = "http://chaira.udla.edu.co/api/v0.1/oauth2/authorize.asmx/token";
         JSONObject js= new JSONObject();
@@ -119,14 +137,13 @@ public class MainActivity extends AppCompatActivity {
         TextView txt = (TextView) findViewById(R.id.tc);
         txt.setVisibility(View.GONE);
 
-        ImageView foto = (ImageView) findViewById(R.id.imageView);
-        foto.setVisibility(View.VISIBLE);
-
         Button show=  (Button) findViewById(R.id.showData);
         show.setVisibility(View.VISIBLE);
+
         //parseData();
     }
 
+    //Parsea  los datos que se recibieron como respuesta
     public void parseData(View v){
         String scope = null;
         String state = null;
@@ -151,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Organiza los datos para ser mostrados más adelante
     public void showData(String scope){
         System.out.println(scope);
         scope = scope.substring(1, scope.length()-1);
@@ -174,9 +192,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        ImageView foto = (ImageView) findViewById(R.id.imageView);
-        foto.setImageBitmap(getFoto(urlPic));
-
         String dataUser = "<h2>" + name + " " + lastname + "</h2><br>" +
                 "<b>Correo institucional: </b>" + correo + "<br>" +
                 "<b> Género: </b> " + genero + "<br>" +
@@ -189,6 +204,13 @@ public class MainActivity extends AppCompatActivity {
         Button showData=  (Button) findViewById(R.id.showData);
         showData.setVisibility(View.GONE);
 
+        ImageView img=  (ImageView) findViewById(R.id.avatar);
+        img.setVisibility(View.VISIBLE);
+
+        ImageView avatar=  (ImageView) findViewById(R.id.avatar);
+        avatar.setImageBitmap(getFoto(urlPic));
+
+
         Button logout=  (Button) findViewById(R.id.logoutBtn);
         logout.setVisibility(View.VISIBLE);
 
@@ -196,42 +218,18 @@ public class MainActivity extends AppCompatActivity {
         show.setText(Html.fromHtml(dataUser));
     }
 
+    //Muestra los datos en un Text View
     public void showScope(String scope){
         TextView show = (TextView) findViewById(R.id.showScope);
         show.setText(scope);
     }
 
+    //Enviar la petición, recibe el Json con el contenido y la url por parámetros
     public void sendRequest(JSONObject content, String url) {
         new SendPostRequest().execute(url, content.toString());
     }
 
-    public String getResponse(){
-        String str= appData.getString("response", "");
-        System.out.println(str);
-        return str;
-    }
-
-    public String getAccessToken() {
-        String at = appData.getString("accessToken", "");
-        return at;
-    }
-
-    public void setAccessToken(String token){
-        SharedPreferences.Editor editor = appData.edit();
-        editor.putString("accessToken", token);
-        editor.commit();
-    }
-    public String getRefreshToken() {
-        String at = appData.getString("refreshToken", "");
-        return at;
-    }
-
-    public void setRefreshToken(String token){
-        SharedPreferences.Editor editor = appData.edit();
-        editor.putString("refreshToken", token);
-        editor.commit();
-    }
-
+    //Descargar la imagen de usuario para mostrarlas
     private Bitmap getFoto(String url) {
         Bitmap imagen = null;
         try {
@@ -249,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
         return  imagen;
     }
 
-//HTTPURLConection
+//Clase privada para realizar y recibir las peticiones
 
     private class SendPostRequest extends AsyncTask<String, Void, String> {
 
@@ -348,6 +346,35 @@ public class MainActivity extends AppCompatActivity {
 
         }
         return result.toString();
+    }
+
+    //Getters y setters para guardar los datos en SharedPreferences
+
+    public String getResponse(){
+        String str= appData.getString("response", "");
+        System.out.println(str);
+        return str;
+    }
+
+    public String getAccessToken() {
+        String at = appData.getString("accessToken", "");
+        return at;
+    }
+
+    public void setAccessToken(String token){
+        SharedPreferences.Editor editor = appData.edit();
+        editor.putString("accessToken", token);
+        editor.commit();
+    }
+    public String getRefreshToken() {
+        String at = appData.getString("refreshToken", "");
+        return at;
+    }
+
+    public void setRefreshToken(String token){
+        SharedPreferences.Editor editor = appData.edit();
+        editor.putString("refreshToken", token);
+        editor.commit();
     }
 
 
